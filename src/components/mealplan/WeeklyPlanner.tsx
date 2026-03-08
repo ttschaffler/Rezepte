@@ -51,8 +51,8 @@ export function WeeklyPlanner({ rezepte }: WeeklyPlannerProps) {
     return (
       <div className="max-w-md mx-auto mt-12 text-center">
         <div className="text-5xl mb-4">⚠️</div>
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">Firebase nicht konfiguriert</h2>
-        <p className="text-sm text-gray-500">{fehler}</p>
+        <h2 className="text-lg font-display font-semibold text-slate-300 mb-2">Firebase nicht konfiguriert</h2>
+        <p className="text-sm text-slate-500">{fehler}</p>
       </div>
     )
   }
@@ -63,16 +63,18 @@ export function WeeklyPlanner({ rezepte }: WeeklyPlannerProps) {
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={vorherige_woche}
-          className="p-2 rounded-xl hover:bg-gray-100 transition-colors text-gray-500"
+          className="px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 border border-[#334155] hover:border-[#d4af37] transition-all"
+          style={{ backgroundColor: '#232934' }}
         >
           ← Vorherige
         </button>
         <div className="text-center">
-          <h2 className="font-semibold text-gray-800">{wocheLabel}</h2>
+          <h2 className="font-display font-semibold text-slate-100 section-bar">{wocheLabel}</h2>
         </div>
         <button
           onClick={naechste_woche}
-          className="p-2 rounded-xl hover:bg-gray-100 transition-colors text-gray-500"
+          className="px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 border border-[#334155] hover:border-[#d4af37] transition-all"
+          style={{ backgroundColor: '#232934' }}
         >
           Nächste →
         </button>
@@ -94,9 +96,7 @@ export function WeeklyPlanner({ rezepte }: WeeklyPlannerProps) {
               istHeute={datum === heuteDatum}
               rezepte={rezepte}
               onMahlzeitHinzufuegen={(d, typ) => setPicker({ datum: d, typ })}
-              onMahlzeitEntfernen={(d, typ) =>
-                mahlzeit_zuordnen(d, typ, null)
-              }
+              onMahlzeitEntfernen={(d, typ) => mahlzeit_zuordnen(d, typ, null)}
               onKalorienZielAendern={(d, ziel) => kalorien_ziel_setzen(d, ziel)}
             />
           )

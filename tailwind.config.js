@@ -5,17 +5,33 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
+          50:  '#fdf8e7',
+          100: '#fbefc0',
+          200: '#f7dc80',
+          300: '#f0c840',
+          400: '#d4af37',
+          500: '#b8941f',
+          600: '#9a7a0f',
+          700: '#7c6208',
+          800: '#5e4a04',
+          900: '#3d3002',
         },
+        surface: {
+          primary:   '#0f1419',
+          secondary: '#1a1f28',
+          card:      '#232934',
+        },
+        accent: {
+          emerald: '#2dd4bf',
+          ruby:    '#f87171',
+        },
+        border: {
+          DEFAULT: '#334155',
+        },
+      },
+      fontFamily: {
+        display: ['"Playfair Display"', 'serif'],
+        body:    ['"Work Sans"', 'system-ui', 'sans-serif'],
       },
     },
   },

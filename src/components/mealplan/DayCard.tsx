@@ -46,20 +46,30 @@ export function DayCard({
 
   return (
     <div
-      className={`bg-white rounded-2xl border shadow-sm flex flex-col ${
-        istHeute ? 'border-brand-300 ring-2 ring-brand-100' : 'border-gray-100'
-      }`}
+      className="rounded-2xl border flex flex-col transition-all hover:-translate-y-0.5"
+      style={{
+        backgroundColor: '#232934',
+        borderColor: istHeute ? '#d4af37' : '#334155',
+        boxShadow: istHeute
+          ? '0 0 0 1px rgba(212, 175, 55, 0.2), 0 4px 16px rgba(0,0,0,0.3)'
+          : '0 2px 8px rgba(0,0,0,0.2)',
+      }}
     >
       {/* Tag-Header */}
       <div
-        className={`px-3 py-2 rounded-t-2xl ${
-          istHeute ? 'bg-brand-500 text-white' : 'bg-gray-50 text-gray-700'
-        }`}
+        className="px-3 py-2 rounded-t-2xl"
+        style={
+          istHeute
+            ? { background: 'linear-gradient(135deg, #d4af37, #f0c840)' }
+            : { backgroundColor: '#1a1f28' }
+        }
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold">{tagName}</p>
-            <p className={`text-xs ${istHeute ? 'text-brand-100' : 'text-gray-400'}`}>
+            <p className={`text-xs font-bold ${istHeute ? 'text-[#0f1419]' : 'text-slate-200'}`}>
+              {tagName}
+            </p>
+            <p className={`text-xs ${istHeute ? 'text-[#5e4a04]' : 'text-slate-500'}`}>
               {new Date(tag.datum + 'T00:00:00').toLocaleDateString('de-DE', {
                 day: '2-digit',
                 month: '2-digit',
@@ -67,7 +77,9 @@ export function DayCard({
             </p>
           </div>
           {istHeute && (
-            <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-lg">Heute</span>
+            <span className="text-xs bg-black/20 text-[#0f1419] font-semibold px-1.5 py-0.5 rounded-lg">
+              Heute
+            </span>
           )}
         </div>
       </div>
@@ -75,7 +87,10 @@ export function DayCard({
       {/* Kalorien-Anzeige */}
       <div className="px-3 pt-2 pb-1">
         <div className="flex items-center justify-between mb-1">
-          <span className={`text-xs font-semibold ${istUeberschritten ? 'text-red-500' : 'text-gray-600'}`}>
+          <span
+            className="text-xs font-semibold"
+            style={{ color: istUeberschritten ? '#f87171' : '#94a3b8' }}
+          >
             🔥 {gesamtKalorien} /{' '}
             {kalorienEdit ? (
               <input
@@ -85,7 +100,7 @@ export function DayCard({
                 onBlur={kalorienSpeichern}
                 onKeyDown={(e) => e.key === 'Enter' && kalorienSpeichern()}
                 autoFocus
-                className="w-16 text-xs border border-brand-300 rounded px-1 focus:outline-none"
+                className="w-16 text-xs rounded px-1 focus:outline-none border border-[#d4af37] bg-[#1a1f28] text-slate-100"
               />
             ) : (
               <button
@@ -93,7 +108,7 @@ export function DayCard({
                   setKalorienEdit(true)
                   setKalorienInput(String(tag.kalorienZiel))
                 }}
-                className="underline decoration-dotted hover:text-brand-600 transition-colors"
+                className="underline decoration-dotted hover:text-[#d4af37] transition-colors"
                 title="Kalorienziel ändern"
               >
                 {tag.kalorienZiel}
@@ -103,12 +118,13 @@ export function DayCard({
           </span>
         </div>
         {/* Fortschrittsbalken */}
-        <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#334155' }}>
           <div
-            className={`h-full rounded-full transition-all ${
-              istUeberschritten ? 'bg-red-400' : 'bg-brand-400'
-            }`}
-            style={{ width: `${fortschritt}%` }}
+            className="h-full rounded-full transition-all"
+            style={{
+              width: `${fortschritt}%`,
+              backgroundColor: istUeberschritten ? '#f87171' : '#2dd4bf',
+            }}
           />
         </div>
       </div>
