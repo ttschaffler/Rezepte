@@ -29,20 +29,31 @@ export function useRecipes() {
   const hinzufuegen = useCallback(async (rezept: Omit<Rezept, 'id'>, bildDatei?: File): Promise<string> => {
     const id = await rezeptSpeichern(rezept)
 
+    let bildUrl: string | undefined
+    let bildPfad: string | undefined
     if (bildDatei) {
-      const { url, pfad } = await uploadRecipeImage(bildDatei, id)
-      await rezeptAktualisieren(id, { bildUrl: url, bildPfad: pfad })
+      const result = await uploadRecipeImage(bildDatei, id)
+      bildUrl = result.url
+      bildPfad = result.pfad
+      await rezeptAktualisieren(id, { bildUrl, bildPfad })
     }
 
-    await laden_()
+    const neuesRezept: Rezept = {
+      ...rezept,
+      id,
+      bildUrl,
+      bildPfad,
+      erstellt: new Date(),
+      aktualisiert: new Date(),
+    }
+    setRezepte((prev) => [neuesRezept, ...prev])
     return id
-  }, [laden_])
+  }, [])
 
   const aktualisieren = useCallback(async (id: string, rezept: Partial<Rezept>, bildDatei?: File): Promise<void> => {
     let update = { ...rezept }
 
     if (bildDatei) {
-      // Altes Bild löschen wenn vorhanden
       const altes = rezepte.find((r) => r.id === id)
       if (altes?.bildPfad) {
         await deleteRecipeImage(altes.bildPfad)
@@ -52,8 +63,8 @@ export function useRecipes() {
     }
 
     await rezeptAktualisieren(id, update)
-    await laden_()
-  }, [laden_, rezepte])
+    setRezepte((prev) => prev.map((r) => r.id === id ? { ...r, ...update, aktualisiert: new Date() } : r))
+  }, [rezepte])
 
   const loeschen = useCallback(async (id: string): Promise<void> => {
     const rezept = rezepte.find((r) => r.id === id)
@@ -61,8 +72,8 @@ export function useRecipes() {
       await deleteRecipeImage(rezept.bildPfad)
     }
     await rezeptLoeschen(id)
-    await laden_()
-  }, [laden_, rezepte])
+    setRezepte((prev) => prev.filter((r) => r.id !== id))
+  }, [rezepte])
 
   return { rezepte, laden, fehler, hinzufuegen, aktualisieren, loeschen, neu_laden: laden_ }
 }

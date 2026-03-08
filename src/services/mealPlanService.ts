@@ -3,6 +3,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteField,
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
@@ -56,26 +57,22 @@ export async function mahlzeitZuordnen(
   mahlzeit: Mahlzeit | null
 ): Promise<void> {
   const docRef = doc(db, COLLECTION, wocheStart)
-  const snapshot = await getDoc(docRef)
+  const feldPfad = `tage.${datum}.mahlzeiten.${typ}`
 
-  let plan: Wochenplan
-  if (!snapshot.exists()) {
-    plan = erstelleLeereWoche(wocheStart)
-  } else {
-    plan = { id: snapshot.id, ...snapshot.data() } as Wochenplan
+  try {
+    await updateDoc(docRef, {
+      [feldPfad]: mahlzeit === null ? deleteField() : mahlzeit,
+      aktualisiert: serverTimestamp(),
+    })
+  } catch {
+    // Dokument existiert noch nicht – leere Woche anlegen und Mahlzeit setzen
+    const plan = erstelleLeereWoche(wocheStart)
+    if (mahlzeit !== null) {
+      plan.tage[datum] ??= { datum, mahlzeiten: {}, kalorienZiel: STANDARD_KALORIEN_ZIEL }
+      plan.tage[datum].mahlzeiten[typ] = mahlzeit
+    }
+    await setDoc(docRef, { ...plan, aktualisiert: serverTimestamp() })
   }
-
-  if (!plan.tage[datum]) {
-    plan.tage[datum] = { datum, mahlzeiten: {}, kalorienZiel: STANDARD_KALORIEN_ZIEL }
-  }
-
-  if (mahlzeit === null) {
-    delete plan.tage[datum].mahlzeiten[typ]
-  } else {
-    plan.tage[datum].mahlzeiten[typ] = mahlzeit
-  }
-
-  await setDoc(docRef, { ...plan, aktualisiert: serverTimestamp() }, { merge: false })
 }
 
 export async function kalorienZielSetzen(

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Wochenplan, MahlzeitTyp, Mahlzeit } from '../types'
+import { STANDARD_KALORIEN_ZIEL } from '../types'
 import {
   getWochenplan,
   mahlzeitZuordnen,
@@ -47,18 +48,31 @@ export function useMealPlan() {
     async (datum: string, typ: MahlzeitTyp, mahlzeit: Mahlzeit | null) => {
       const wStart = wocheStartDatum(aktuellesMontagDatum)
       await mahlzeitZuordnen(wStart, datum, typ, mahlzeit)
-      await laden_(aktuellesMontagDatum)
+      setWochenplan((prev) => {
+        if (!prev) return prev
+        const tag = prev.tage[datum] ?? { datum, mahlzeiten: {}, kalorienZiel: STANDARD_KALORIEN_ZIEL }
+        const neueMahlzeiten = { ...tag.mahlzeiten }
+        if (mahlzeit === null) {
+          delete neueMahlzeiten[typ]
+        } else {
+          neueMahlzeiten[typ] = mahlzeit
+        }
+        return { ...prev, tage: { ...prev.tage, [datum]: { ...tag, mahlzeiten: neueMahlzeiten } } }
+      })
     },
-    [aktuellesMontagDatum, laden_]
+    [aktuellesMontagDatum]
   )
 
   const kalorien_ziel_setzen = useCallback(
     async (datum: string, ziel: number) => {
       const wStart = wocheStartDatum(aktuellesMontagDatum)
       await kalorienZielSetzen(wStart, datum, ziel)
-      await laden_(aktuellesMontagDatum)
+      setWochenplan((prev) => {
+        if (!prev || !prev.tage[datum]) return prev
+        return { ...prev, tage: { ...prev.tage, [datum]: { ...prev.tage[datum], kalorienZiel: ziel } } }
+      })
     },
-    [aktuellesMontagDatum, laden_]
+    [aktuellesMontagDatum]
   )
 
   return {
